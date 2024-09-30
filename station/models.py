@@ -8,5 +8,9 @@ class Bus(models.Model):
     class Meta:
         verbose_name = 'buses'
 
+    @property
+    def is_small(self):
+        return self.num_seats <= 20
+
     def __str__(self):
         return f"Bus {self.info} (id= {self.id})"
