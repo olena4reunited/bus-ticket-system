@@ -9,8 +9,11 @@ class BusSerializer(serializers.ModelSerializer):
 
 
 class TripSerializer(serializers.ModelSerializer):
-    bus = BusSerializer()
 
     class Meta:
         model = Trip
         fields = ["id", "source", "destination", "departure", "bus"]
+
+
+class TripListSerializer(TripSerializer):
+    bus = BusSerializer()
