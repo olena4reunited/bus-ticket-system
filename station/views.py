@@ -1,12 +1,22 @@
 from rest_framework import viewsets
 
 from station.models import Bus, Trip
-from station.serializers import BusSerializer, TripSerializer, TripListSerializer
+from station.serializers import BusSerializer, TripSerializer, TripListSerializer, BusListSerializer
 
 
 class BusViewSet(viewsets.ModelViewSet):
-    queryset = Bus.objects.all()
-    serializer_class = BusSerializer
+    def get_serializer_class(self):
+        if self.action == "list":
+            return BusListSerializer
+
+        return BusSerializer
+
+    def get_queryset(self):
+        queryset = Bus.objects.all()
+        if self.action == "list":
+            return queryset.prefetch_related("facilities")
+        return queryset
+
 
 
 class TripViewSet(viewsets.ModelViewSet):

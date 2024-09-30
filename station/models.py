@@ -7,7 +7,7 @@ class Facility(models.Model):
     name = models.CharField(max_length=255)
 
     class Meta:
-        verbose_name_plural = 'facilities'
+        verbose_name_plural = "facilities"
 
     def __str__(self):
         return self.name
@@ -16,9 +16,10 @@ class Facility(models.Model):
 class Bus(models.Model):
     info = models.CharField(max_length=255, null=True)
     num_seats = models.IntegerField()
+    facilities = models.ManyToManyField(Facility, related_name="buses")
 
     class Meta:
-        verbose_name = 'buses'
+        verbose_name = "buses"
 
     @property
     def is_small(self):
