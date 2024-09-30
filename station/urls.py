@@ -2,12 +2,12 @@ from django.contrib.admin import action
 from django.urls import path, include
 from rest_framework import routers
 
-from station.views import BusViewSet
-
+from station.views import BusViewSet, TripViewSet
 
 router = routers.DefaultRouter()
 
 router.register("buses", BusViewSet, basename="bus")
+router.register("trips", TripViewSet, basename="trip")
 
 
 urlpatterns = [
