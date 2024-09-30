@@ -1,5 +1,5 @@
 from django.contrib.admin import action
-from django.urls import path
+from django.urls import path, include
 from rest_framework import routers
 
 from station.views import BusViewSet
@@ -7,10 +7,12 @@ from station.views import BusViewSet
 
 router = routers.DefaultRouter()
 
-router.register("buses", BusViewSet)
+router.register("buses", BusViewSet, basename="bus")
 
 
-urlpatterns = router.urls
+urlpatterns = [
+    path("", include(router.urls)),
+]
 
 
 # bus_list = BusViewSet.as_view(
