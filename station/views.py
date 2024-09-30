@@ -10,11 +10,14 @@ class BusViewSet(viewsets.ModelViewSet):
 
 
 class TripViewSet(viewsets.ModelViewSet):
-    queryset = Trip.objects.all().select_related()
-    serializer_class = TripSerializer
-
     def get_serializer_class(self):
         if self.action == "list":
             return TripListSerializer
 
         return TripSerializer
+
+    def get_queryset(self):
+        queryset = Trip.objects.all()
+        if self.action == "list":
+            return queryset.select_related()
+        return queryset
