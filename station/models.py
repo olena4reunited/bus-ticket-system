@@ -48,7 +48,7 @@ class Trip(models.Model):
 class Ticket(models.Model):
     seat = models.IntegerField()
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
-    order = models.ForeignKey("Order", on_delete=models.CASCADE)
+    order = models.ForeignKey("Order", on_delete=models.CASCADE, related_name="tickets")
 
     class Meta:
         constraints = [
@@ -60,9 +60,11 @@ class Ticket(models.Model):
 
     def clean(self):
         if not (1 <= self.seat <= self.trip.bus.num_seats):
-            raise ValueError({
-                "seat": f"seat must be in range [1, {self.trip.bus.num_seats}], not {self.seat}"
-            })
+            raise ValueError(
+                {
+                    "seat": f"seat must be in range [1, {self.trip.bus.num_seats}], not {self.seat}"
+                }
+            )
 
     def save(
         self,
