@@ -49,10 +49,6 @@ class TripListSerializer(TripSerializer):
         fields = ["id", "source", "destination", "departure", "bus_info", "bus_num_seats"]
 
 
-class TripRetrieveSerializer(TripSerializer):
-    bus = BusRetrieveSerializer(many=False, read_only=True)
-
-
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
@@ -79,6 +75,11 @@ class TicketSerializer(serializers.ModelSerializer):
         #             "seat": f"seat must be in range [1, {attrs['trip'].bus.num_seats}], not {attrs['seat']}"
         #         }
         #     )
+
+
+class TripRetrieveSerializer(TripSerializer):
+    bus = BusRetrieveSerializer(many=False, read_only=True)
+    ticket_set = TicketSerializer(many=True, read_only=True)
 
 
 class OrderSerializer(serializers.ModelSerializer):
