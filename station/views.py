@@ -1,3 +1,4 @@
+from django.db.models import Count, F
 from rest_framework import viewsets
 
 from station.models import (
@@ -63,9 +64,17 @@ class TripViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = Trip.objects.all()
-        if self.action == ["list", "retrieve"]:
+
+        if self.action == "list":
+            queryset = (
+                queryset
+                .select_related()
+                .annotate(tickets_available=F("bus__num_seats") - Count("tickets"))
+            )
+        elif self.action == "retrieve":
             return queryset.select_related()
-        return queryset
+
+        return queryset.order_by("id")
 
 
 class OrderViewSet(viewsets.ModelViewSet):
