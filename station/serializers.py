@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from station.models import Bus, Trip, Facility
+from station.models import Bus, Trip, Facility, Ticket, Order
 
 
 class FacilitySerializer(serializers.ModelSerializer):
@@ -49,4 +49,15 @@ class TripListSerializer(TripSerializer):
 class TripRetrieveSerializer(TripSerializer):
     bus = BusRetrieveSerializer(many=False, read_only=True)
 
+
+class TicketSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ["id", "seat", "trip"]
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ["id", "created_at", "user", "tickets"]
 
