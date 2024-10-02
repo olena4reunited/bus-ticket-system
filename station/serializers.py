@@ -65,11 +65,13 @@ class TicketSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, attrs):
+        data = super(TicketSerializer, self).validate(attrs)
         Ticket.validate_seat(
             attrs["seat"],
             attrs["trip"].trip.bus.num_seats,
             serializers.ValidationError
         )
+        return data
 
         # if not (1 <= attrs["seat"] <= attrs["trip"].bus.num_seats):
         #     raise serializers.ValidationError(
