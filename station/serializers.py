@@ -34,4 +34,19 @@ class TripSerializer(serializers.ModelSerializer):
 
 
 class TripListSerializer(TripSerializer):
-    bus = BusSerializer()
+    bus_info = serializers.CharField(
+        source="bus.info", read_only=True
+    )
+    bus_num_seats = serializers.IntegerField(
+        source="bus.num_seats", read_only=True
+    )
+
+    class Meta:
+        model = Trip
+        fields = ["id", "source", "destination", "departure", "bus_info", "bus_num_seats"]
+
+
+class TripRetrieveSerializer(TripSerializer):
+    bus = BusRetrieveSerializer(many=False, read_only=True)
+
+
