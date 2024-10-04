@@ -13,7 +13,7 @@ from station.serializers import (
     BusListSerializer,
     FacilitySerializer,
     BusRetrieveSerializer,
-    TripRetrieveSerializer, OrderSerializer
+    TripRetrieveSerializer, OrderSerializer, OrderListSerializer
 )
 
 
@@ -81,8 +81,21 @@ class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
+    def get_serializer_class(self):
+        serializer = self.serializer_class
+
+        if self.action == "list":
+            serializer = OrderListSerializer
+
+        return serializer
+
     def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
+        queryset = self.queryset.filter(user=self.request.user)
+
+        if self.action == "list":
+            queryset = queryset.prefetch_related("tickets_trip_bus")
+
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
