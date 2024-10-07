@@ -14,7 +14,19 @@ class FacilitySerializer(serializers.ModelSerializer):
 class BusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bus
-        fields = ["id", "is_small", "info", "num_seats", "facilities"]
+        fields = [
+            "id",
+            "is_small",
+            "info",
+            "num_seats",
+            "facilities"
+        ]
+
+
+class BusImageSerializer(BusSerializer):
+    class Meta:
+        model = Bus
+        fields = ["id", "image"]
 
 
 class BusListSerializer(BusSerializer):

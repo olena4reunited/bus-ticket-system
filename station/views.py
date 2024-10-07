@@ -1,5 +1,8 @@
 from django.db.models import Count, F
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAdminUser
+from rest_framework.response import Response
 
 from station.models import (
     Bus,
@@ -13,7 +16,10 @@ from station.serializers import (
     BusListSerializer,
     FacilitySerializer,
     BusRetrieveSerializer,
-    TripRetrieveSerializer, OrderSerializer, OrderListSerializer
+    TripRetrieveSerializer,
+    OrderSerializer,
+    OrderListSerializer,
+    BusImageSerializer
 )
 
 
@@ -35,6 +41,8 @@ class BusViewSet(viewsets.ModelViewSet):
             return BusListSerializer
         elif self.action == "retrieve":
             return BusRetrieveSerializer
+        elif self.action == "upload_image":
+            return BusImageSerializer
 
         return BusSerializer
 
@@ -51,6 +59,21 @@ class BusViewSet(viewsets.ModelViewSet):
             return queryset.prefetch_related("facilities")
 
         return queryset.distinct()
+
+    @action(
+        methods=["POST"],
+        detail=True,
+        permission_classes=[IsAdminUser],
+        url_path="upload-image",
+    )
+    def upload_image(self, request, pk=None):
+        bus = self.get_object()
+        serializer = self.get_serializer(bus, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TripViewSet(viewsets.ModelViewSet):

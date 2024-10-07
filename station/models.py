@@ -1,6 +1,10 @@
+import pathlib
+import uuid
+
 from django.conf import settings
 from django.db import models
 from django.db.models import UniqueConstraint
+from django.utils.text import slugify
 
 
 class Facility(models.Model):
@@ -13,10 +17,22 @@ class Facility(models.Model):
         return self.name
 
 
+# image.jpg: upload_to="" --> media/image.jpg
+# image.jpg: upload_to="upload/buses" --> media/upload/buses/image.jpg
+# -----------------------------------------------------------------
+# image.jpg: upload_to="upload/buses" --> media/upload/buses/image-SOME-RANDOM-SYMBOLS.jpg
+
+
+def bus_image_path(instance: "Bus", filename: str) -> pathlib.Path:
+    filename = f"{ slugify(instance.info)}-{uuid.uuid4()}" + pathlib.Path(filename).suffix
+    return pathlib.Path("upload/buses/") / pathlib.Path(filename)
+
+
 class Bus(models.Model):
     info = models.CharField(max_length=255, null=True)
     num_seats = models.IntegerField()
     facilities = models.ManyToManyField(Facility, related_name="buses")
+    image = models.ImageField(null=True, upload_to=bus_image_path)
 
     class Meta:
         verbose_name = "buses"
