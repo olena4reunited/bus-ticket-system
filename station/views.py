@@ -1,8 +1,10 @@
 from django.db.models import Count, F
-from rest_framework import viewsets, status
+from drf_spectacular.utils import extend_schema, OpenApiParameter
+from rest_framework import viewsets, status, mixins
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
 
 from station.models import (
     Bus,
@@ -28,7 +30,13 @@ class FacilityViewSet(viewsets.ModelViewSet):
     serializer_class = FacilitySerializer
 
 
-class BusViewSet(viewsets.ModelViewSet):
+class BusViewSet(
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet
+):
     @staticmethod
     def _params_to_ints(query_string):
         """
@@ -74,6 +82,19 @@ class BusViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "facilities",
+                type={"type": "array", "items": {"type": "number"}},
+                description="Filter by facilities id (ex. ?facilities=2,3)",
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
 
 
 class TripViewSet(viewsets.ModelViewSet):
